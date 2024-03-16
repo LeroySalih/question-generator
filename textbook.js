@@ -37,9 +37,9 @@ async function main(url, specId, specTag, code){
 
    const questions = await getQuestions(transcript);
 
-   const questionResult = uploadQuestions(supabase, specItemId, code, questions)
+   const questionResult = await uploadQuestions(supabase, specItemId, code, questions)
 
-   
+   console.log("Uploaded ", questionResult.length, "questions")
 
   } catch (error) {
     console.error(error);
@@ -173,7 +173,7 @@ async function uploadQuestions(supabase, specItemId, code, questions) {
       const choices = questions.choices[i];
       const correct_answer = questions.correct_answers[i][0];
 
-      console.log(question_text, choices, correct_answer)
+      // console.log(question_text, choices, correct_answer)
       const {data, error} = await supabase.from("dqQuestions").insert({ specItemId, code, question_text, choices, correct_answer}).select("id")
     
       if (error) {
@@ -196,6 +196,11 @@ async function uploadQuestions(supabase, specItemId, code, questions) {
 const code= process.argv[2];
 const specId = process.argv[3];
 const specItemId = process.argv[4]
+
+if(process.argv.length != 5){
+  console.error("Incorrect number of args")
+  process.exit();
+}
 
 console.log(`Getting data for `, code)
 console.log(`SpecId`, specId)
